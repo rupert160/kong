@@ -63,3 +63,8 @@ typings/
 
 # next.js build output
 .next
+
+#rupert added
+bin/
+downloads/
+
