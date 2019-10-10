@@ -18,7 +18,7 @@ phases:
       - echo build Docker image on `date`
       - cd src
       - docker build -t ${application}:${version} .
-      - docker tag ${application}:${version} ${account}.dkr.ecr.${region}.amazonaws.com/${application}:latest
+      - docker tag ${application}:${version} ${account}.dkr.ecr.${region}.amazonaws.com/${application}:${version}
   post_build:
     commands:
       - echo build Docker image complete `date`
