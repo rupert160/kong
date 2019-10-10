@@ -1,1 +1,1 @@
-image_name = "sample-express-app"
+image_name = "kong"
