@@ -42,25 +42,37 @@ locals {
 # ---------------------------------------------------------------------------------------------------------------------
 # AWS Networking
 # ---------------------------------------------------------------------------------------------------------------------
-variable "vpc_id" {
-  description = "ID of the VPC"
-}
+#variable "vpc_id" {
+#  description = "ID of the VPC"
+#}
 
 variable "availability_zones" {
   type        = list
   description = "List of Availability Zones"
 }
 
-variable "public_subnets_ids" {
+#variable "public_subnets_ids" {
+#  type        = list
+#  description = "List of Public Subnets IDs"
+#}
+#
+#variable "private_subnets_ids" {
+#  type        = list
+#  description = "List of Private Subnets IDs"
+#}
+
+variable "public_subnets_cidrs_per_availability_zone" {
   type        = list
   description = "List of Public Subnets IDs"
 }
 
-variable "private_subnets_ids" {
+variable "private_subnets_cidrs_per_availability_zone" {
   type        = list
   description = "List of Private Subnets IDs"
 }
-
+variable "vpc_cidr_block" {
+  description = "VPC CIDR"
+}
 # ---------------------------------------------------------------------------------------------------------------------
 # AWS ECS Container Definition Variables
 # ---------------------------------------------------------------------------------------------------------------------
@@ -212,22 +224,22 @@ variable "proxy_configuration" {
 # ---------------------------------------------------------------------------------------------------------------------
 # AWS ECS SERVICE
 # ---------------------------------------------------------------------------------------------------------------------
-variable "task_definition_arn" {
-  description = "(Required) The full ARN of the task definition that you want to run in your service."
-}
+#variable "task_definition_arn" {
+#  description = "(Required) The full ARN of the task definition that you want to run in your service."
+#}
 
 variable "ecs_cluster_name" {
   description = "Name of the ECS cluster"
 }
 
-variable "ecs_cluster_arn" {
-  description = "ARN of an ECS cluster"
-}
+#variable "ecs_cluster_arn" {
+#  description = "ARN of an ECS cluster"
+#}
 
-variable "subnets" {
-  description = "The subnets associated with the task or service."
-  type        = list
-}
+#variable "subnets" {
+#  description = "The subnets associated with the task or service."
+#  type        = list
+#}
 
 variable "desired_count" {
   description = "(Optional) The number of instances of the task definition to place and keep running. Defaults to 1."

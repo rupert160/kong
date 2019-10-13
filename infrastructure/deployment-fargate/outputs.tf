@@ -116,3 +116,32 @@ output "lb_zone_id" {
   description = "$${var.name_preffix} Load Balancer Zone ID"
   value       = module.ecs-fargate-service.lb_zone_id
 }
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# AWS NETWORK
+# ---------------------------------------------------------------------------------------------------------------------
+output "network_av" {
+  description = "availability zones." 
+  value       = module.networking.availability_zones
+}
+
+output "subnets_public" {
+  description = "Public Subnets." 
+  value       = module.networking.public_subnets_ids
+}
+
+output "subnets_private" {
+  description = "Private Nubnets." 
+  value       = module.networking.private_subnets_ids
+}
+
+output "subnets" {
+  description = "Subnets but actually referring to the private ones." 
+  value       = module.networking.private_subnets_ids
+}
+
+output "vpc_id" {
+  description = "Virtual Private Network." 
+  value       = module.networking.vpc_id
+}

@@ -7,6 +7,21 @@ provider "aws" {
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
+# PROVIDER
+# ---------------------------------------------------------------------------------------------------------------------
+module "networking" {
+   source          = "cn-terraform/networking/aws"
+   version         = "2.0.4"
+   name_preffix    = var.name_preffix
+   profile         = var.profile
+   region          = var.region
+   vpc_cidr_block  = var.vpc_cidr_block
+   availability_zones = var.availability_zones 
+   public_subnets_cidrs_per_availability_zone  = var.public_subnets_cidrs_per_availability_zone
+   private_subnets_cidrs_per_availability_zone = var.private_subnets_cidrs_per_availability_zone
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
 # ECS Cluster
 # ---------------------------------------------------------------------------------------------------------------------
 module "ecs-cluster" {
@@ -62,12 +77,12 @@ module "ecs-fargate-service" {
   name_preffix        = var.name_preffix
   profile             = var.profile
   region              = var.region
-  vpc_id              = var.vpc_id
-  subnets             = var.private_subnets_ids
+	#vpc_id              = var.vpc_id
+	#subnets             = var.private_subnets_ids
   ecs_cluster_name    = module.ecs-cluster.aws_ecs_cluster_cluster_name
   ecs_cluster_arn     = module.ecs-cluster.aws_ecs_cluster_cluster_arn
   task_definition_arn                = module.ecs-fargate-task-definition.aws_ecs_task_definition_td_arn
-  container_name                     = var.container_name
+	container_name                     = var.container_name
   container_port                     = module.ecs-fargate-task-definition.container_port
   desired_count                      = var.desired_count
   platform_version                   = var.platform_version
@@ -81,4 +96,9 @@ module "ecs-fargate-service" {
   service_registries                 = var.service_registries
   security_groups                    = var.security_groups
   assign_public_ip                   = var.assign_public_ip
+	#availability_zones  = module.networking.availability_zones
+	#public_subnets_ids  = module.networking.public_subnets_ids
+	#private_subnets_ids = module.networking.private_subnets_ids
+	subnets             = module.networking.private_subnets_ids
+	vpc_id              = module.networking.vpc_id
 }
