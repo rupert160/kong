@@ -9,6 +9,7 @@ TERRAFORM_VERSION='0.12.10'
 TERRAFORM_ZIP="terraform_${TERRAFORM_VERSION}_linux_amd64.zip"
 TERRAFORM_URL="https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/${TERRAFORM_ZIP}"
 TERRAFORM_BIN='terraform'
+TERRAFORM="${BINARY_DIR}/${TERRAFORM_BIN}"
 
 function exit_error(){
    echo "$1"
@@ -44,15 +45,13 @@ function install_terraform(){
    rm "$BINARY_DIR/$TERRAFORM_BIN"
    unzip -d "$BINARY_DIR" "${DOWNLOADS_DIR}/${TERRAFORM_ZIP}"
    
-   kong_terraform="${BINARY_DIR}/${TERRAFORM_BIN}"
-
-   chmod u+x "${kong_terraform}"
-   alias t="${kong_terraform}"
+   chmod u+x "${TERRAFORM}"
    
-   if ! [[ -x "${kong_terraform}" ]]; then
+   if ! [[ -x "${TERRAFORM}" ]]; then
       exit_error "error: terreform binary is not executable" 
    fi
-   t version
+
+   ${TERRAFORM} version
 }
 
 function setup_codecommit(){
@@ -67,6 +66,7 @@ function setup_codecommit(){
        esac
    done
 }
+
 function change_aws_account(){
    echo "have you amended your account the project_root/buildspec.yml from 735655096069 file?"
    select yn in "Yes" "No"; do
@@ -77,11 +77,6 @@ function change_aws_account(){
    done
 }
 
-function tear_down(){
-   t plan -destroy -out=destroy-plan
-   t plan apply destroy-plan
-   t apply destroy-plan
-}
 
 function kong_config(){
    export_aws_credentials
@@ -91,13 +86,25 @@ function kong_config(){
 }
 
 function kong_build(){
+   export_aws_credentials
    cd ${TFSPEC_DIR}
    #t 0.12upgrade
-   t init .
-   t apply -auto-approve
+   "${TERRAFORM}" init .
+   "${TERRAFORM}" plan -out=create-pipeline
+   "${TERRAFORM}" apply create-pipeline
    git push --set-upstream codecommit master
+   aws codepipeline start-pipeline-execution --name docker-image-build
 }
 
-function kong_deploy(){
-   
+function tear_down(){
+   "${TERRAFORM}" plan -destroy -out=destroy-pipeline
+   "${TERRAFORM}" apply destroy-pipeline
 }
+
+#function kong_deploy(){
+#   
+#}
+
+#kong_config
+#kong_build
+tear_down
