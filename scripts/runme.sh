@@ -3,7 +3,8 @@
 PROJECT_DIR="$(cd "`dirname $0`"/..; pwd)"
 DOWNLOADS_DIR="${PROJECT_DIR}/downloads"
 BINARY_DIR="${PROJECT_DIR}/bin"
-TFSPEC_DIR="${PROJECT_DIR}/infrastructure/deployment-pipeline/"
+PIPELINE_DIR="${PROJECT_DIR}/infrastructure/deployment-pipeline/"
+FARGATE_DIR="${PROJECT_DIR}/infrastructure/deployment-fargate/"
 
 TERRAFORM_VERSION='0.12.10'
 TERRAFORM_ZIP="terraform_${TERRAFORM_VERSION}_linux_amd64.zip"
@@ -87,7 +88,7 @@ function kong_config(){
 
 function kong_build(){
    export_aws_credentials
-   cd ${TFSPEC_DIR}
+   cd ${PIPELINE_DIR}
    #t 0.12upgrade
    "${TERRAFORM}" init .
    "${TERRAFORM}" plan -out=create-pipeline
@@ -97,14 +98,22 @@ function kong_build(){
 }
 
 function tear_down(){
+   cd ${PIPELINE_DIR}
    "${TERRAFORM}" plan -destroy -out=destroy-pipeline
    "${TERRAFORM}" apply destroy-pipeline
+   cd "${FARGATE_DIR}"
+   "${TERRAFORM}" plan -destroy -out=destroy-fargate
+   "${TERRAFORM}" apply destroy-fargate
 }
 
-#function kong_deploy(){
-#   
-#}
+function kong_deploy(){
+   cd "${FARGATE_DIR}"
+   "${TERRAFORM}" init
+   "${TERRAFORM}" plan -out=create-fargate
+   "${TERRAFORM}" apply create-fargate
+}
 
 #kong_config
 #kong_build
-tear_down
+#kong_deploy
+#tear_down
